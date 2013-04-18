@@ -145,7 +145,7 @@ module ActsAsFerret
     end
     @@remote
   end
-  remote?
+  # remote? -> We need to defer this to a railtie
 
 
   # Declares an index.
