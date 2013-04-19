@@ -10,7 +10,7 @@ module ActsAsFerret
     end
       
     config.to_prepare { 
-      ActsAsFerret::remote? # deferring this
+      # ActsAsFerret::remote? # deferring this
       ActsAsFerret::load_config 
     }
     

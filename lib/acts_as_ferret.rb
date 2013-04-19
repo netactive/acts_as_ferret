@@ -130,12 +130,12 @@ module ActsAsFerret
   
   @@remote = nil
   mattr_accessor :remote
-  def self.remote?
+  def self.remote?(config_path = nil)
     if @@remote.nil?
       if ENV["FERRET_USE_LOCAL_INDEX"] || ActsAsFerret::Server::Server.running
         @@remote = false
       else
-        @@remote = ActsAsFerret::Server::Config.new.uri rescue false
+        @@remote = ActsAsFerret::Server::Config.new(config_path).uri rescue false
       end
       if @@remote
         logger.info "Will use remote index server which should be available at #{@@remote}"
@@ -145,7 +145,7 @@ module ActsAsFerret
     end
     @@remote
   end
-  # remote? -> We need to defer this to a railtie
+  #remote? # -> We need to defer this to a railtie
 
 
   # Declares an index.
