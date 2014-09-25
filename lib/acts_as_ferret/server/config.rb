@@ -33,8 +33,20 @@ module ActsAsFerret
         if path =~ /^\//
           path
         else
-          Rails.root.join(path).to_s
+          root = Rails.root.to_s
+          root = determine_rails_root if root.blank?
+          File.expand_path(root, path) 
         end
+      end
+
+      def determine_rails_root
+        possible_rails_roots = [
+          (defined?(FERRET_SERVER) ? File.join(File.dirname(FERRET_SERVER), '..') : nil),
+          File.join(File.dirname(__FILE__), *(['..']*4)),
+          '.'
+        ].compact
+        # take the first dir where environment.rb can be found
+        possible_rails_roots.find{ |dir| File.readable?(File.join(dir, 'config', 'application.rb')) }
       end
 
       ################################################################################
@@ -42,9 +54,6 @@ module ActsAsFerret
       def method_missing (name, *args)
         @config.has_key?(name.to_s) ? @config[name.to_s] : super
       end
-
     end
-    
-    
   end
 end
