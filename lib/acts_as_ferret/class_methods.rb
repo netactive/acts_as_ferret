@@ -65,7 +65,7 @@ module ActsAsFerret
         logger.warn "#{self.name}: Override records_modified_since(time) to keep the index up to date with records changed during rebuild."
         []
       else
-        where([ condition.join(' AND '), *([time]*condition.size) ]).all
+        where([ condition.join(' AND '), *([time]*condition.size) ])
       end
     end
 
@@ -74,14 +74,14 @@ module ActsAsFerret
       transaction do
         if use_fast_batches?
           offset = 0
-          while (rows = where([ "#{table_name}.id > ?", offset ]).limit(batch_size).all).any?
+          while (rows = where([ "#{table_name}.id > ?", offset ]).limit(batch_size)).any?
             offset = rows.last.id
             yield rows, offset
           end
         else
           order = "#{primary_key} ASC" # fixes #212
           0.step(self.count, batch_size) do |offset|
-            yield scoped.limit(batch_size).offset(offset).order(order).all, offset
+            yield all.limit(batch_size).offset(offset).order(order), offset
           end
         end
       end
@@ -92,9 +92,9 @@ module ActsAsFerret
       transaction do
         offset = 0
         ids.each_slice(batch_size) do |id_slice|
-          records = where(:id => id_slice).all
+          records = where(:id => id_slice)
           #yield records, offset
-          yield where(:id => id_slice).all, offset
+          yield where(:id => id_slice), offset
           offset += batch_size
         end
       end
@@ -146,9 +146,9 @@ module ActsAsFerret
     # +page+ and +per_page+ are supposed to work regardless of any 
     # +conditions+ present in +find_options+.
     def find_with_ferret(q, options = {}, find_options = {})
-      if self.scoped.to_sql =~ /WHERE/ && self.scoped.where_values_hash.empty?
         # Treat external scope the same as if :conditions present 
         # (i.e. when it comes to counting results). 
+      if self.all.to_sql =~ /WHERE/ && self.all.where_values_hash.empty?
         find_options[:conditions] ||= '1=1'
       end
       return ActsAsFerret::find q, self, options, find_options
