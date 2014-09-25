@@ -61,6 +61,9 @@ begin
   
   begin
     require File.join(root, 'config', 'application')
+    # We need to include enviornment as that boots straps the rails models etc, which the server needs to know about
+    # otherwise an error is returned.
+    require File.join(root, 'config', 'environment')
   rescue
     puts "Error booting your rails app at #{root}: #{$!}\n#{$!.backtrace.join("\n")}"
     raise $!
