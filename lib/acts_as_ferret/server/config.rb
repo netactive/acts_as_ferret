@@ -3,7 +3,7 @@ require 'erb'
 
 module ActsAsFerret
   module Server
-    
+
     class Config
 
       ################################################################################
@@ -28,14 +28,14 @@ module ActsAsFerret
           @config['uri'] = socket.nil? ? "druby://#{host}:#{port}" : "drbunix:#{socket}"
         end
       end
-      
+
       def abs_config_file_path(path)
         if path =~ /^\//
           path
         else
           root = Rails.root.to_s
           root = determine_rails_root if root.blank?
-          File.expand_path(root, path) 
+          File.expand_path(path, root)
         end
       end
 
