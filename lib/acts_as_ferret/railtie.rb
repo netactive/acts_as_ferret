@@ -9,7 +9,10 @@ module ActsAsFerret
       load File.join(File.dirname(__FILE__), '../../tasks/ferret.rake')
     end
       
-    config.to_prepare { ActsAsFerret::load_config }
+    config.to_prepare { 
+      # ActsAsFerret::remote? # deferring this
+      ActsAsFerret::load_config 
+    }
     
   end
   
